@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>learn Resources</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script type="text/javascript">
+    var websocket = null;
+    //判断当前浏览器是否支持WebSocket
+    if ('WebSocket' in window) {
+        websocket = new WebSocket("ws://localhost:9090/ws/bitcoinServer");
+
+        //连接成功建立的回调方法
+        websocket.onopen = function () {
+            websocket.send("客户端连接成功");
+        }
+
+        //接收到消息的回调方法
+        websocket.onmessage = function (event) {
+            setMessageInnerHTML(event.data);
+        }
+
+        //连接发生错误的回调方法
+        websocket.onerror = function () {
+            alert("WebSocket连接发生错误");
+        };
+
+        //连接关闭的回调方法
+        websocket.onclose = function () {
+            alert("WebSocket连接关闭");
+        }
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            closeWebSocket();
+        }
+
+    }
+    else {
+        alert('当前浏览器 Not support websocket')
+    }
+
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        var bitcoin = eval("("+innerHTML+")");
+        document.getElementById('price').innerHTML = bitcoin.price;
+        document.getElementById('total').innerHTML = bitcoin.total;
+    }
+
+    //关闭WebSocket连接
+    function closeWebSocket() {
+        websocket.close();
+    }
+
+</script>
+</head>
+<body>
+
+<div style="text-align: center;margin:0 auto;width: 1000px; ">
+    <div style="width:400px;margin:20px auto;border:1px solid lightgray;padding:20px;text-align:center;">
+        当前比特币价格：￥<span style="color:#FF7519" id="price">10000</span>
+        <div style="font-size:0.9em;margin-top:20px">查看的人数越多，价格越高, 当前总共 <span id="total">1</span> 个人在线</div>
+    </div>
+
+    <table width="100%" border="1" cellspacing="1" cellpadding="0">
+        <tr>
+            <td>作者</td>
+            <td>教程名称</td>
+            <td>地址</td>
+        </tr>
+        <!--/*@thymesVar id="learnList" type=""*/-->
+        <tr th:each="learn : ${learnList}">
+            <td th:text="${learn.author}">嘟嘟MD</td>
+            <td th:text="${learn.title}">SPringBoot干货系列</td>
+            <td><a th:href="${learn.url}" target="_blank">点我</a></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
