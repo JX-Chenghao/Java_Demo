@@ -44,7 +44,7 @@ public class Application implements  Runnable{
 		dataSource.setTestOnBorrow(false);//申请连接时执行validationQuery检测连接是否有效
 		dataSource.setTestWhileIdle(true);//建议配置为true，不影响性能，并且保证安全性。
 		dataSource.setPoolPreparedStatements(false);//是否缓存preparedStatement，也就是PSCache
-        LOG.info("MYSQL数据源建立");
+        LOG.info("MYSQL数据源建立: {} ",env.getProperty("spring.datasource.username"));
         return dataSource;
 	}
 
