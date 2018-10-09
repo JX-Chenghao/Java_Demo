@@ -1,27 +1,26 @@
 package com.ncu.springboot.mvc.controller;
 
-import com.ncu.springboot.Application;
-import com.ncu.springboot.dao.UserRepository;
 import com.ncu.springboot.mvc.exception.OwnException;
-import com.ncu.springboot.pojo.LearnResouce;
 import com.ncu.springboot.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Positive;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class UserController {
     private  final Logger LOG= LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    UserRepository userRepository;
+/*    @Autowired
+    UserRepository userRepository;*/
 
     @PostMapping("/login")
     public Map<String,String> login(HttpServletRequest request, String userName, String password){
@@ -35,13 +34,16 @@ public class UserController {
         LOG.info("用户登录");
         return map;
     }
+/*
 
-    /**
+    */
+/**
      * 根据 id 查询用户
      * @param id
      * @param model
      * @return
-     */
+     *//*
+
     @GetMapping("/user/{id}")
     public ModelAndView view(@PathVariable("id") Long id, Model model) {
         Optional<User> user = userRepository.findById(id);
@@ -49,6 +51,7 @@ public class UserController {
         model.addAttribute("title", "查看用户");
         return new ModelAndView("users/view","userModel",model);
     }
+*/
 
 
 }
