@@ -2,6 +2,7 @@ package com.ncu.springboot.mvc.controller;
 
 import com.ncu.springboot.Application;
 import com.ncu.springboot.pojo.LearnResouce;
+import com.ncu.springboot.websocket.PriceCreateThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ public class ThymeleafController {
     @RequestMapping("/websocket")
     public ModelAndView index(){
         if(!START_FLAG){
-            new Thread(new Application()).start();
+            new Thread(new PriceCreateThread()).start();
             START_FLAG=true;
             LOG.info("开启新线程实时推送价格");
         }

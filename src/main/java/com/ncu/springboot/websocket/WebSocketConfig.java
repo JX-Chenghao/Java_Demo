@@ -1,4 +1,4 @@
-package com.ncu.springboot;
+package com.ncu.springboot.websocket;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Positive;
 import java.util.*;
 
 @RestController
@@ -22,7 +23,7 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public Map<String,String> login(HttpServletRequest request, String userName, String password){
         Map<String,String> map=new HashMap<>();
         if("".equals(userName) && "".equals(password)){
@@ -49,41 +50,5 @@ public class UserController {
         return new ModelAndView("users/view","userModel",model);
     }
 
-    /**
-     * 获取创建表单页面
-     * @param model
-     * @return
-     */
-    @GetMapping("/user/form")
-    public ModelAndView createForm(Model model) {
-        model.addAttribute("user", new User(null, null, null));
-        model.addAttribute("title", "创建用户");
-        return new ModelAndView("users/form","userModel",model);
-    }
 
-
-    /**
-     * 删除用户
-     * @param id
-     * @return
-     */
-    @GetMapping("/user/delete/{id}")
-    public ModelAndView delete(@PathVariable("id") Long id) {
-        userRepository.deleteById(id);
-        return new ModelAndView("redirect:/users"); // 重定向到 list页面
-    }
-
-    /**
-     * 获取修改用户的界面
-     * @param id
-     * @param model
-     * @return
-     */
-    @GetMapping("/user/modify/{id}")
-    public ModelAndView modify(@PathVariable("id") Long id, Model model) {
-        Optional<User> user = userRepository.findById(id);
-        model.addAttribute("user", user.get());
-        model.addAttribute("title", "修改用户");
-        return new ModelAndView("users/form","userModel",model);
-    }
 }

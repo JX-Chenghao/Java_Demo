@@ -43,12 +43,6 @@
 			<version>4.3.10.RELEASE</version>
 		</dependency>
 
-        <!--spring security-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -70,7 +64,6 @@
 		<!--
 		 前台USE：<script src="/webjars/jquery/jquery.min.js"></script>
 		 http://localhost:9090/webjars/jquery/jquery.min.js
-
 		 webjars-locator 使前台使用时省略版本号
 		-->
 		<dependency>
@@ -89,15 +82,26 @@
 			<version>0.31</version>
 		</dependency>
 
+<!--
+		&lt;!&ndash;security&ndash;&gt;
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+-->
 
-        <!--thymeleaf-->
+
+		<!--thymeleaf-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		<dependency>
+		<groupId>org.thymeleaf.extras</groupId>
+		<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+		</dependency>
 
-
-        <!--jdbc-->
+		<!--jdbc-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>

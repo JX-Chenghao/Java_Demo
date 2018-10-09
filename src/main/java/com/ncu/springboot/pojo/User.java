@@ -34,6 +34,12 @@ public class User {
 		this.email = email;
 	}
 
+	public User(String name, String email, String pwd) {
+		this.name = name;
+		this.email = email;
+		this.pwd = pwd;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("User[id=%d,name='%s',email='%s']", id, name, email);

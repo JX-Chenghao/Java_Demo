@@ -1,18 +1,13 @@
-package com.ncu.springboot;
-
+package com.ncu.springboot.websocket;
 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 
 /**
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
@@ -20,11 +15,10 @@ import javax.websocket.server.ServerEndpoint;
  */
 @ServerEndpoint("/ws/bitcoinServer")
 @Component
-public class BitCoinServer {
-    private  static final Logger LOG= LoggerFactory.getLogger(BitCoinServer.class);
+public class BitCoinWebSocketServer {
+    private  static final Logger LOG= LoggerFactory.getLogger(BitCoinWebSocketServer.class);
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
-
 
     @OnOpen
     public void onOpen(Session session){

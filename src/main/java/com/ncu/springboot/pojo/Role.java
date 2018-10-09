@@ -17,5 +17,8 @@ public class Role  {
     private String remark;
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "role_permission", joinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "permission_id", referencedColumnName = "id") })
+    private Set<Permission> permissions;
 
 }

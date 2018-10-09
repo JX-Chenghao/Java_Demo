@@ -1,3 +1,4 @@
+/*
 package com.ncu.springboot.mvc.security;
 
 import com.ncu.springboot.mvc.config.MyWebMvcConfigurerAdapter;
@@ -18,9 +19,9 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private  static final Logger LOG= LoggerFactory.getLogger(MyWebMvcConfigurerAdapter.class);
-    UserDetailsService userDetailsService = new OwnUserDetailService();
+    //UserDetailsService userDetailsService = new OwnUserDetailService();
     //身份验证管理生成器
- /*   @Override
+  @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         //1.启用内存用户存储
 //        auth.inMemoryAuthentication()
@@ -32,37 +33,48 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .authoritiesByUsernameQuery("select username,rolename from role where username=?")
 //                .passwordEncoder(passwordEncoder());
         //3.配置自定义的用户服务
-        auth.userDetailsService(userDetailsService);
-
-    }*/
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //auth.userDetailsService(userDetailsService);
         super.configure(auth);
     }
 
-    //HTTP请求安全处理
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/","/index","/webjars/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/loginPage")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
-    }
     //WEB安全
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers( "/webjars/**");
     }
+
+    //HTTP请求安全处理
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //允许所有用户访问"/"和"/home"
+        http.authorizeRequests()
+                .antMatchers("/", "/index").permitAll()
+                //其他地址的访问均需验证权限
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                //指定登录页是"/login"
+                .loginPage("/loginPage")
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                //退出登录后的默认url是"/login"
+                .logoutSuccessUrl("/loginPage")
+                .permitAll();
+        //解决非thymeleaf的form表单提交被拦截问题
+        http.csrf().disable();
+
+    }
+
+
+*/
+/*
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*//*
+
 }
+*/
