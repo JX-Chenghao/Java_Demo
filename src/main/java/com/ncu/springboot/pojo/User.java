@@ -1,5 +1,9 @@
 package com.ncu.springboot.pojo;
 
+import lombok.Data;
+
+import java.util.Set;
+
 /**
  * User 实体.
  * 
@@ -7,7 +11,7 @@ package com.ncu.springboot.pojo;
  * @author <a href="https://waylau.com">Way Lau</a> 
  */
 
-//@Data
+@Data
 //@Entity
 public class User {
 	//@Id // 主键
@@ -19,6 +23,7 @@ public class User {
 	/*@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
 	private Set<Role> roles;*/
+	private Set<Role> roles;
 
 	protected User() { // 无参构造函数;设为 protected 防止直接使用
 	}
@@ -35,8 +40,7 @@ public class User {
 		this.pwd = pwd;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("User[id=%d,name='%s',email='%s']", id, name, email);
+	public String getCredentialSalt(){
+		return getName()+"123";
 	}
 }

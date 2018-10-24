@@ -4,21 +4,36 @@
 <head th:replace="~{fragments/header :: header}">
 </head>
 <body>
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+	function find() {
+        $.ajax({
+            url :'/user/find',
+            type:"post",
+            data:{name : $("input[name='nameFind']").val()},
+            dataType:"json",
+            success :function(data){
+                if(data.id != ""){
+					$('#userInfo').html(data.id + " " + data.name + " "  +data.email + " " +data.pwd);
+                }
+            }
+        });
+    }
+
+</script>
 
 <!-- Page content -->
 <div class="container blog-content-container"> 
+      <input type="text" name="nameFind" />
+	  <button onclick="find()"> 查找</button>
+	  <p id="userInfo"></p>
 
-	<h3 th:text="${userModel.title}">waylau</h3>
-	<div>
-		<P><strong>ID:</strong><span th:text="${userModel.user.id}"></span></P>
-		<P><strong>Name:</strong><span th:text="${userModel.user.name}"></span></P>
-		<P><strong>Email:</strong><span th:text="${userModel.user.email}"></span></P>
-	</div>
-	<div>
-		<a th:href="@{'/users/delete/'+${userModel.user.id}}">删除</a>
-		<a th:href="@{'/users/modify/'+${userModel.user.id}}">修改</a>
-	</div>
-
+	<form METHOD="POST" ACTION="/user/save">
+		<input type="text" name="name" />
+		<input type="text" name="pwd" />
+		<input type="text" name="email" />
+		<input type="submit"/>
+	</form>
 </div><!-- /.container -->
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

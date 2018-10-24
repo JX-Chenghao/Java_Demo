@@ -3,6 +3,7 @@ package com.ncu.springboot.mvc.controller;
 import com.ncu.springboot.Service.AuthorizationService;
 import com.ncu.springboot.pojo.LearnResouce;
 import com.ncu.springboot.pojo.Role;
+import com.ncu.springboot.pojo.User;
 import com.ncu.springboot.websocket.PriceCreateThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class ThymeleafController {
     private  static final Logger LOG= LoggerFactory.getLogger(ThymeleafController.class);
     private static  boolean START_FLAG=false;
     @Autowired
-    AuthorizationService authorizationService;
+    private AuthorizationService authorizationService;
 
     @RequestMapping("/websocket")
     public ModelAndView index(){
@@ -41,6 +42,10 @@ public class ThymeleafController {
         List<Role> userRoles = authorizationService.findUserRolePermissions(1L);
         bean =new LearnResouce(userRoles.toString(),"IE","http://www.baidu.com");
         learnList.add(bean);
+        User user= authorizationService.findUserRolePermissionsByName("kongzi");
+        bean =new LearnResouce(user.toString(),"IE","http://www.baidu.com");
+        learnList.add(bean);
+
         ModelAndView modelAndView = new ModelAndView("/indexThymeleaf");
         modelAndView.addObject("learnList", learnList);
         return modelAndView;
