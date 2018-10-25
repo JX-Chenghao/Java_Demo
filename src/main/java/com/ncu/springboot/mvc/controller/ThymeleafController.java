@@ -5,6 +5,7 @@ import com.ncu.springboot.pojo.LearnResouce;
 import com.ncu.springboot.pojo.Role;
 import com.ncu.springboot.pojo.User;
 import com.ncu.springboot.websocket.PriceCreateThread;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class ThymeleafController {
 
     @RequestMapping("/websocket")
     public ModelAndView index(){
+        LOG.info("价格实时展示");
         if(!START_FLAG){
             new Thread(new PriceCreateThread()).start();
             START_FLAG=true;
@@ -38,12 +40,6 @@ public class ThymeleafController {
         bean =new LearnResouce("程序猿","谷歌","https://www.google.com/");
         learnList.add(bean);
         bean =new LearnResouce("HHHHH","IE","http://www.baidu.com");
-        learnList.add(bean);
-        List<Role> userRoles = authorizationService.findUserRolePermissions(1L);
-        bean =new LearnResouce(userRoles.toString(),"IE","http://www.baidu.com");
-        learnList.add(bean);
-        User user= authorizationService.findUserRolePermissionsByName("kongzi");
-        bean =new LearnResouce(user.toString(),"IE","http://www.baidu.com");
         learnList.add(bean);
 
         ModelAndView modelAndView = new ModelAndView("/indexThymeleaf");

@@ -22,8 +22,8 @@ public class MyWebMvcConfigurerAdapter implements WebMvcConfigurer /*extends Web
         registry.addRedirectViewController("/", "/index");
         registry.addViewController("/loginPage").setViewName("/loginPage");
         registry.addViewController("/index").setViewName("/fragments/header");
-        registry.addViewController("/findView").setViewName("/users/view");
-        registry.addViewController("/saveView").setViewName("/users/view");
+        registry.addViewController("/findPage").setViewName("/users/view");
+        registry.addViewController("/savePage").setViewName("/users/view");
     }
 
     @Override

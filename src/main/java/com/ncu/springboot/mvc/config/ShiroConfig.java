@@ -5,10 +5,18 @@ import com.ncu.springboot.mvc.security.UserDbRealm;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.filter.authc.LogoutFilter;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
@@ -29,7 +37,7 @@ public class ShiroConfig {
 
     @Bean
     public SecurityManager securityManager(){
-        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+        DefaultSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(realm());
         LOG.info("Shiro - SecurityManager 建立");
         LOG.info("Shiro - SecurityManager.Realm 设置完成");
@@ -39,6 +47,26 @@ public class ShiroConfig {
         //securityManager.setSessionManager(sessionManager());
         return  securityManager;
 
+    }
+    @Bean
+    public ShiroFilterFactoryBean shiroFilter(){
+        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
+        shiroFilter.setSecurityManager(securityManager());
+        Map<String, Filter> filters = new HashMap<>();
+        LogoutFilter logoutFilter = new LogoutFilter();
+        logoutFilter.setRedirectUrl("/loginPage");
+        filters.put("logout",logoutFilter);
+        shiroFilter.setFilters(filters);
+        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
+        filterChainDefinitionMap.put("/loginPage", "anon");
+        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/logout", "logout");
+        filterChainDefinitionMap.put("/webjars/**", "anon");
+        filterChainDefinitionMap.put("/**", "authc");
+        shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        shiroFilter.setLoginUrl("/loginPage");
+        shiroFilter.setUnauthorizedUrl("/403");
+        return  shiroFilter;
     }
 
 }

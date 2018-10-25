@@ -8,7 +8,7 @@
 <body>
 
 <div style="width:400px;margin:20px auto;border:1px solid lightgray;padding:20px;text-align:center;">
-    当前比特币价格：￥<span style="color:#FF7519" id="price">10000</span>
+    当前价格：￥<span style="color:#FF7519" id="price">10000</span>
     <div style="font-size:0.9em;margin-top:20px">查看的人数越多，价格越高, 当前总共 <span id="total">1</span> 个人在线</div>
 </div>
 
