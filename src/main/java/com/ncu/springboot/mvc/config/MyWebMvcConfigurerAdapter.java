@@ -19,9 +19,8 @@ public class MyWebMvcConfigurerAdapter implements WebMvcConfigurer /*extends Web
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         //与AutoConfiguration同时生效
-        registry.addRedirectViewController("/", "/index");
+        registry.addRedirectViewController("/", "/thymeleaf/websocket");
         registry.addViewController("/loginPage").setViewName("/loginPage");
-        registry.addViewController("/index").setViewName("/fragments/header");
         registry.addViewController("/findPage").setViewName("/users/view");
         registry.addViewController("/savePage").setViewName("/users/view");
     }

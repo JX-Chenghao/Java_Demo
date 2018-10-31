@@ -1,63 +1,101 @@
 package com.ncu.springboot.mvc.controller;
 
+import com.google.code.kaptcha.Constants;
+import com.google.code.kaptcha.Producer;
 import com.ncu.springboot.Service.UserService;
 import com.ncu.springboot.mvc.exception.OwnException;
 import com.ncu.springboot.pojo.User;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 public class UserController {
     private  final Logger LOG= LoggerFactory.getLogger(this.getClass());
+    public static final String SHIRO_LOGIN_FAILURE = "shiroLoginFailure";
     @Autowired
     private UserService userService;
-/*    @Autowired
-    UserRepository userRepository;*/
+    @Autowired
+    private Producer kaptcha;
+
 
     @PostMapping("/login")
-    public Map<String,String> login(HttpServletRequest request, String userName, String password){
-
-        /*Map<String,String> map=new HashMap<>();
-        if("".equals(userName) && "".equals(password)){
-            LOG.info("用户名和密码错误");
-            throw new OwnException("用户名和密码错误");
-        }
-        request.getSession().setAttribute("user","admin");
-        map.put("result","true");*/
+    public Map<String,String> login(HttpServletRequest request, String username, String password){
         LOG.info("账户登录");
         Map<String,String> map=new HashMap<>();
         Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
-        try {
-            subject.login(token);
-        }catch (IncorrectCredentialsException e){
-            e.printStackTrace();
-            throw new OwnException("账户名或密码出错");
-        }catch (ExcessiveAttemptsException e){
-            e.printStackTrace();
-            throw new OwnException("登录失败5次,账户:"+subject.getPrincipal()+"已被锁定");
-        }
-        map.put("result","true");
 
-        LOG.info("账户登录成功,当前Shiro.Subject用户 {}: ",subject.getPrincipal());
-        return map;
+        String strError = (String) request.getAttribute(SHIRO_LOGIN_FAILURE);
+        if("captchaError".equals(strError)){
+            throw new OwnException("验证码有误");
+        }else if(IncorrectCredentialsException.class.getName().equals(strError)){
+            throw new OwnException("[IncorrectCredentialsException]账户名或密码出错");
+        }else if(ExcessiveAttemptsException.class.getName().equals(strError)){
+            throw new OwnException("[ExcessiveAttemptsException]登录失败5次,账户:"+subject.getPrincipal()+"已被锁定");
+        }else if(AuthenticationException.class.getName().equals(strError)){
+            String[] split = strError.split("\\.");
+            throw new OwnException("["+split[split.length-1]+"]账户 "+username+" 不存在");
+        }else{
+            map.put("result","true");
+            LOG.info("账户登录成功,当前Shiro.Subject用户 {}: ",subject.getPrincipal());
+            return map;
+        }
+           /*
+            既然走了表单过滤器验证 那么subject.login(token)此代码
+            已在FormAuthenticationFilter.onAccessDenied中调用
+            UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+            subject.login(token);
+           */
+
+
     }
 
-
+    @RequestMapping("/captcha.jpg")
+    public String captcha(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        //客户端不存缓存，立马过期
+        // Set to expire far in the past.
+        response.setDateHeader("Expires", 0);
+        // Set standard HTTP/1.1 no-cache headers.
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        // Set IE extended HTTP/1.1 no-cache headers (use addHeader).
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        // Set standard HTTP/1.0 no-cache header.
+        response.setHeader("Pragma", "no-cache");
+        // return a jpeg
+        response.setContentType("image/jpeg");
+        // create the text for the image
+        String capText = kaptcha.createText();
+        // store the text in the session
+        // 之后在过滤器中比对
+        request.getSession().setAttribute(Constants.KAPTCHA_SESSION_KEY, capText);
+        // create the image with the text
+        BufferedImage bi = kaptcha.createImage(capText);
+        ServletOutputStream out = response.getOutputStream();
+        // write the data out
+        ImageIO.write(bi, "jpg", out);
+        try {
+            out.flush();
+        } finally {
+            out.close();
+        }
+        return null;
+    }
 
     @PostMapping("/user/find")
     public User find(String name) {

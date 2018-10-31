@@ -1,23 +1,24 @@
 package com.ncu.springboot.mvc.security;
 
 import com.ncu.springboot.Service.AuthorizationService;
-import com.ncu.springboot.mvc.exception.OwnException;
+import com.ncu.springboot.mvc.helper.ExceptionStrPropertiesHelper;
 import com.ncu.springboot.pojo.User;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserDbRealm extends AuthorizingRealm{
     @Autowired
     AuthorizationService authorizationService;
+    private  static final Logger LOG = LoggerFactory.getLogger(UserDbRealm.class);
     @Override
     public String getName() {
         return "USER_REALM";
@@ -49,7 +50,8 @@ public class UserDbRealm extends AuthorizingRealm{
         String username = (String)authenticationToken.getPrincipal();
         User user = authorizationService.findUserRolePermissionsByName(username);
         if(user == null) {
-            throw new OwnException("不存在此帐号");
+            LOG.info(ExceptionStrPropertiesHelper.getInstance().getPropertiesValue("user_does_not_exist_sys"));
+            throw new AuthenticationException();
         }
         /*
           if(Boolean.TRUE.equals(user.getLocked())) {

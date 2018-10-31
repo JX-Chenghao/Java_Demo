@@ -6,9 +6,9 @@
     <meta name="description" content="登录" />
     <title>登录界面</title>
 </head>
-<body>
+<body >
 <!-- begin -->
-<div id="login">
+<div id="login" style="background-color: gainsboro;width: 500px;height: 600px">
     <div class="wrapper">
         <div class="login">
             <form action="#" method="post" class="container offset1 loginform">
@@ -24,8 +24,8 @@
                     <input type="hidden" name="_csrf" value="9IAtUxV2CatyxHiK2LxzOsT6wtBE6h8BpzOmk="/>
                     <div class="control-group">
                         <div class="controls">
-                            <label for="userName" class="control-label fa fa-envelope"></label>
-                            <input id="userName" type="text" name="email" placeholder="Email" tabindex="1" autofocus="autofocus" class="form-control input-medium" />
+                            <label for="username" class="control-label fa fa-envelope"></label>
+                            <input id="username" type="text" name="email" placeholder="Email" tabindex="1" autofocus="autofocus" class="form-control input-medium" />
                         </div>
                     </div>
                     <div class="control-group">
@@ -34,7 +34,14 @@
                             <input id="password" type="password" name="password" placeholder="Password" tabindex="2" class="form-control input-medium" />
                         </div>
                     </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label for="captcha" class="control-label fa fa-asterisk"></label>
+                            <input id="captcha" type="text" name="captcha" placeholder="captcha" tabindex="2" class="form-control input-medium" />
+                        </div>
+                    </div>
                 </div>
+                <img src="/captcha.jpg" />
                 <div class="form-actions">
                     <button type="button" id="doLogin" tabindex="4" class="btn btn-primary">Login</button>
                 </div>
@@ -56,8 +63,9 @@
                     type : "POST",
                     url : "/login",
                     data : {
-                        "userName" : $("#userName").val(),
-                        "password" : $("#password").val()
+                        "username" : $("#username").val(),
+                        "password" : $("#password").val(),
+                        "kaptcha" : $("#captcha").val()
                     },
                     dataType : "json",
                     success : function(data) {
