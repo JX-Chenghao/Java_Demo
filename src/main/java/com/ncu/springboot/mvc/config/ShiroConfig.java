@@ -1,28 +1,38 @@
 package com.ncu.springboot.mvc.config;
 
-import com.google.code.kaptcha.NoiseProducer;
 import com.google.code.kaptcha.Producer;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.google.code.kaptcha.impl.FishEyeGimpy;
 import com.google.code.kaptcha.util.Config;
 import com.ncu.springboot.mvc.security.CaptchaValidateFilter;
 import com.ncu.springboot.mvc.security.UserCredentialMatcher;
 import com.ncu.springboot.mvc.security.UserDbRealm;
 import com.ncu.springboot.mvc.security.UserFormAuthenticationFilter;
+import com.ncu.springboot.mvc.security.redis.RedisCacheManager;
+import com.ncu.springboot.mvc.security.redis.RedisManager;
+import com.ncu.springboot.mvc.security.redis.RedisSessionDAO;
+import com.ncu.springboot.mvc.security.redis.ShiroDefaultWebSessionManager;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.SessionManager;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.apache.shiro.web.filter.authc.UserFilter;
+
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,6 +42,20 @@ import java.util.Properties;
 public class ShiroConfig {
     private  static final Logger LOG= LoggerFactory.getLogger(ShiroConfig.class);
     private static final String SHIRO_LOGIN_FAILURE = "shiroLoginFailure";
+
+    @Value("${spring.redis.host}")
+    private String redisHost;
+
+    @Value("${spring.redis.port}")
+    private int redisPort;
+
+    @Value("${spring.redis.password}")
+    private String redisPassWord;
+
+    @Value("${server.servlet.session.cookie.name}")
+    private String sessionIdCookieName;
+
+    /*身份验证*/
     @Bean
     public UserDbRealm realm(){
         LOG.info("Shiro - Realm 建立");
@@ -46,6 +70,60 @@ public class ShiroConfig {
         return userDbRealm;
     }
 
+    //一般的Cookie都是从document对象中获得的，现在浏览器在设置 Cookie的时候一般都接受
+    // 一个叫做HttpOnly的参数，跟domain等其他参数一样，一旦这个HttpOnly被设置，你在浏
+    // 览器的 document对象中就看不到Cookie了，而浏览器在浏览的时候不受任何影响，因为
+    // Cookie会被放在浏览器头中发送出去(包括ajax的时 候)，应用程序也一般不会在js里操作
+    // 这些敏感Cookie的，对于一些敏感的Cookie我们采用HttpOnly，对于一些需要在应用程序中
+    // 用js操作的cookie我们就不予设置，这样就保障了Cookie信息的安全也保证了应用。
+    @Bean
+    public Cookie cookie(){
+        SimpleCookie simpleCookie = new SimpleCookie(sessionIdCookieName);
+        simpleCookie.setHttpOnly(true);
+        simpleCookie.setMaxAge(-1);
+        return  simpleCookie;
+    }
+
+    /**
+     * 配置 shiro redisManager
+     * 其实使用的是 shiro-redis 开源插件
+     */
+    @Bean
+    public RedisManager redisManager(){
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(redisHost);
+        if (StringUtils.isNotEmpty(redisPassWord)) {
+            redisManager.setPassword(redisPassWord);
+        }
+        redisManager.setPort(redisPort);
+        redisManager.setExpire(1800);//键值对 过期
+        redisManager.setTimeout(10000);
+        return  redisManager;
+    }
+
+    @Bean
+    public SessionDAO redisSessionDAO(){
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(redisManager());
+        return redisSessionDAO;
+    }
+    @Bean
+    public CacheManager cacheManager(){
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        return  redisCacheManager;
+    }
+
+    @Bean
+    public SessionManager sessionManager(){
+        DefaultWebSessionManager sessionManager = new ShiroDefaultWebSessionManager();
+        sessionManager.setSessionIdCookieEnabled(true);
+        sessionManager.setSessionIdCookie(cookie());
+        sessionManager.setGlobalSessionTimeout(180000);
+        sessionManager.setSessionDAO(redisSessionDAO());
+        return  sessionManager;
+    }
+
     @Bean
     public SecurityManager securityManager(){
         DefaultSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -54,8 +132,15 @@ public class ShiroConfig {
         LOG.info("Shiro - SecurityManager.Realm 设置完成");
         //将SecurityManager设置到SecurityUtils 方便全局使用
         SecurityUtils.setSecurityManager(securityManager);
-        // 自定义session管理 使用redis
-        //securityManager.setSessionManager(sessionManager());
+        // 自定义session管理 使用redis,导致shiro 在请求处理中
+        // 需要用到session 的时候都要从redis 中取数据并且反序列化
+
+        // shiro 使用redis 频繁read session 以及 save session
+        // 比如lastTime.. 都会去save
+        securityManager.setSessionManager(sessionManager());
+
+        //如果之后一直不去 保存KEY到redis  那么注释掉此行！！！！！！！
+        securityManager.setCacheManager(cacheManager());
         return  securityManager;
 
     }
@@ -82,14 +167,17 @@ public class ShiroConfig {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         filterChainDefinitionMap.put("/loginPage", "anon");
         filterChainDefinitionMap.put("/login", "captchaValidate,authc");
+        filterChainDefinitionMap.put("/webjars/**", "anon");
+        filterChainDefinitionMap.put("/*.ico", "anon");
         filterChainDefinitionMap.put("/captcha.jpg", "anon");
         filterChainDefinitionMap.put("/logout", "logout");
-        filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/**", "user");
         shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMap);
         shiroFilter.setLoginUrl("/login");
         return  shiroFilter;
     }
+
+    /*验证码*/
     @Bean
     public Producer kaptcha(){
         DefaultKaptcha kaptcha = new DefaultKaptcha();

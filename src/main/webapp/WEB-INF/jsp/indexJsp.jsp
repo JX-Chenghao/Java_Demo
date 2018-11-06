@@ -1,4 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8" %>
+<%@taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +14,6 @@
 </div>
 
 </body>
-
 <script type="text/javascript">
     var websocket = null;
     //判断当前浏览器是否支持WebSocket

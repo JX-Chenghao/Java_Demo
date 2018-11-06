@@ -36,6 +36,10 @@ public class UserFormAuthenticationFilter extends FormAuthenticationFilter {
 
     //因为 我们需要在表单提交中展示 验证码错误 这条信息，而不是直接拦截掉请求，我们需要使请求放行到 表单身份验证此处
 
+
+    //onAccessDenied：表示访问拒绝时是否自己处理，
+    //   如果返回true表示自己不处理且继续拦截器链执行，
+    //   返回false表示自己已经处理了（比如重定向到另一个页面）
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         if (request.getAttribute(getFailureKeyAttribute()) != null) {
