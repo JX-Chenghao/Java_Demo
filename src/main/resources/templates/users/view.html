@@ -13,6 +13,10 @@
             data:{name : $("input[name='nameFind']").val()},
             dataType:"json",
             success :function(data){
+                if(data.result=="exception"){
+                    alert("异常："+data.message+"["+data.errorCode+"]");
+                    return ;
+				}
                 if(data.id != ""){
 					$('#userInfo').html(data.id + " " + data.name + " "  +data.email + " " +data.pwd);
                 }

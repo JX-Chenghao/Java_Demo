@@ -9,6 +9,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,10 @@ public class UserController {
         LOG.info("账户登录");
         Map<String,String> map=new HashMap<>();
         Subject subject = SecurityUtils.getSubject();
+
+        if(subject.isAuthenticated() && !subject.getPrincipal().equals(username)){
+            throw new OwnException("當前瀏覽器已有另一個用戶登錄");
+        }
 
         String strError = (String) request.getAttribute(SHIRO_LOGIN_FAILURE);
         if("captchaError".equals(strError)){
@@ -97,12 +103,14 @@ public class UserController {
         return null;
     }
 
+    @RequiresPermissions("user:find")
     @PostMapping("/user/find")
     public User find(String name) {
         LOG.info("查询账户");
         return userService.findUserByName(name);
     }
 
+    @RequiresPermissions("user:save")
     @PostMapping("/user/save")
     public Map<String,String> find(User user) {
         Map<String,String> map=new HashMap<>();

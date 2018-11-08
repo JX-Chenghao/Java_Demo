@@ -7,7 +7,9 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
@@ -29,17 +31,18 @@ public class UserDbRealm extends AuthorizingRealm{
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        /*String username = (String)principalCollection.getPrimaryPrincipal();
+        String username = (String)principalCollection.getPrimaryPrincipal();
 
         if (username == null) {
-            throw new AuthorizationException("执行的用户不存在");
+            throw new AuthorizationException(ExceptionStrPropertiesHelper.getInstance()
+                    .getPropertiesValue("user_login_info_had_expired"));
         }
+
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         authorizationInfo.setRoles(authorizationService.findRoles(username));
         authorizationInfo.setStringPermissions(authorizationService.findPermissions(username));
 
-        return authorizationInfo;*/
-        return null;
+        return authorizationInfo;
     }
 
     /**

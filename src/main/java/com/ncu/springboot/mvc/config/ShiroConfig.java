@@ -18,6 +18,7 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.apache.shiro.web.filter.authc.UserFilter;
@@ -127,7 +128,7 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager(){
         DefaultSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(realm());
+
         LOG.info("Shiro - SecurityManager 建立");
         LOG.info("Shiro - SecurityManager.Realm 设置完成");
         //将SecurityManager设置到SecurityUtils 方便全局使用
@@ -141,9 +142,35 @@ public class ShiroConfig {
 
         //如果之后一直不去 保存KEY到redis  那么注释掉此行！！！！！！！
         securityManager.setCacheManager(cacheManager());
+
+        securityManager.setRealm(realm());
         return  securityManager;
 
     }
+
+    /**
+     * 开启shiro aop注解支持.
+     * 使用代理方式;所以需要开启代码支持;
+     * AuthorizationAttributeSourceAdvisor  通知器
+     *
+     *  （requiresRoles/requiresPermission/..）注解了的類和方法
+     *   將會被此類找尋到
+     *
+     *   匹配所有类
+     *   匹配所有加认证注解的方法
+     *
+     *   其他 框架的項目：<aop:config/>会扫描配置文件中的所有advisor，并为其创建代理。
+     *   spring-boot項目： 需要 spring-boot-starter-aop 依賴支持
+     */
+
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor() {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager());
+        return authorizationAttributeSourceAdvisor;
+    }
+
+
     @Bean
     public ShiroFilterFactoryBean shiroFilter(){
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
@@ -170,8 +197,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/*.ico", "anon");
         filterChainDefinitionMap.put("/captcha.jpg", "anon");
-        filterChainDefinitionMap.put("/logout", "logout");
         filterChainDefinitionMap.put("/**", "user");
+        filterChainDefinitionMap.put("/logout", "logout");
         shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMap);
         shiroFilter.setLoginUrl("/login");
         return  shiroFilter;
