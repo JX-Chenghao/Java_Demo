@@ -38,8 +38,9 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public Map<String,String> login(HttpServletRequest request, String username, String password){
+    public Map<String,String> login(HttpServletRequest request, String username, String password,Boolean rememberMe){
         LOG.info("账户登录");
+        LOG.info("token.rememberMe-{}",rememberMe);
         Map<String,String> map=new HashMap<>();
         Subject subject = SecurityUtils.getSubject();
 
@@ -68,8 +69,6 @@ public class UserController {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             subject.login(token);
            */
-
-
     }
 
     @RequestMapping("/captcha.jpg")

@@ -14,7 +14,9 @@ import com.ncu.springboot.mvc.security.redis.ShiroDefaultWebSessionManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
@@ -23,6 +25,7 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.apache.shiro.web.filter.authc.UserFilter;
 
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.Cookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
@@ -56,6 +59,7 @@ public class ShiroConfig {
     @Value("${server.servlet.session.cookie.name}")
     private String sessionIdCookieName;
 
+    private String rememberMeCookieName = "springBoot-rememberMe";
     /*身份验证*/
     @Bean
     public UserDbRealm realm(){
@@ -83,6 +87,31 @@ public class ShiroConfig {
         simpleCookie.setHttpOnly(true);
         simpleCookie.setMaxAge(-1);
         return  simpleCookie;
+    }
+
+    @Bean
+    public Cookie rememberMeCookie(){
+        SimpleCookie simpleCookie = new SimpleCookie(rememberMeCookieName);
+        simpleCookie.setHttpOnly(true);
+        simpleCookie.setMaxAge(3600*24*15);//15天
+        return  simpleCookie;
+    }
+
+
+    /*
+        访问一般网页，如个人在主页之类的，我们使用user拦截器即可，user
+    拦截器只要用户登录(isRemembered()==true or isAuthenticated()==true)
+    过即可访问成功；
+        访问特殊网页，如我的订单，提交订单页面，我们使用authc拦截器即可，
+    authc拦截器会判断用户是否是通过Subject.login（isAuthenticated()==true）
+    登录的，如果是才放行，否则会跳转到登录页面叫你重新登录。
+    因此RememberMe使用过程中，需要配合相应的拦截器来实现相应的功能*/
+    @Bean
+    public RememberMeManager rememberMeManager(){
+        CookieRememberMeManager rememberMeManager=new CookieRememberMeManager();
+        rememberMeManager.setCookie(rememberMeCookie());
+        rememberMeManager.setCipherKey(Base64.decode("1AvVhmFLUs0KTA3Kprscat=="));
+        return rememberMeManager;
     }
 
     /**
@@ -143,6 +172,9 @@ public class ShiroConfig {
         //如果之后一直不去 保存KEY到redis  那么注释掉此行！！！！！！！
         securityManager.setCacheManager(cacheManager());
 
+        //rememberMe
+        securityManager.setRememberMeManager(rememberMeManager());
+
         securityManager.setRealm(realm());
         return  securityManager;
 
@@ -181,10 +213,12 @@ public class ShiroConfig {
         CaptchaValidateFilter captchaValidateFilter = new CaptchaValidateFilter();
         captchaValidateFilter.setCaptchaEnabled(true);
         captchaValidateFilter.setCaptchaParam("kaptcha");
+        //表单登录认证过滤器
         UserFormAuthenticationFilter userFormAuthenticationFilter = new UserFormAuthenticationFilter();
         userFormAuthenticationFilter.setFailureKeyAttribute(SHIRO_LOGIN_FAILURE);
         userFormAuthenticationFilter.setUsernameParam("username");
         userFormAuthenticationFilter.setPasswordParam("password");
+        userFormAuthenticationFilter.setRememberMeParam("rememberMe");
         UserFilter userFilter = new UserFilter();
         filters.put("logout",logoutFilter);
         filters.put("captchaValidate",captchaValidateFilter);
@@ -197,8 +231,10 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/*.ico", "anon");
         filterChainDefinitionMap.put("/captcha.jpg", "anon");
-        filterChainDefinitionMap.put("/**", "user");
+        //此url 依旧需要用户认证，只持有remberMe Cookie 无权访问
+        filterChainDefinitionMap.put("/importantPage", "authc");//一旦这样(可以在重要页面，rememberMe不起作用，继续要求认证) 那么rememberMe 就算为true ,之后你再进来此页面依旧需要登录
         filterChainDefinitionMap.put("/logout", "logout");
+        filterChainDefinitionMap.put("/**", "user");
         shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMap);
         shiroFilter.setLoginUrl("/login");
         return  shiroFilter;

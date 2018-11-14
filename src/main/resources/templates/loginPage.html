@@ -39,6 +39,7 @@
                             <label for="captcha" class="control-label fa fa-asterisk"></label>
                             <input id="captcha" type="text" name="captcha" placeholder="captcha" tabindex="2" class="form-control input-medium" />
                         </div>
+                        <input id="rememberMe" type="checkbox" name="rememberMe" title="记住我/自动登录" />
                     </div>
                 </div>
                 <img src="/captcha.jpg" />
@@ -59,13 +60,19 @@
 
             //简单登录操作
             $("#doLogin").click(function (e) {
+                var rememberMe = false;
+                if($("#rememberMe").prop('checked')){
+                    rememberMe = true;
+                }
+
                 $.ajax({
                     type : "POST",
                     url : "/login",
                     data : {
                         "username" : $("#username").val(),
                         "password" : $("#password").val(),
-                        "kaptcha" : $("#captcha").val()
+                        "kaptcha" : $("#captcha").val(),
+                        "rememberMe" : rememberMe
                     },
                     dataType : "json",
                     success : function(data) {
