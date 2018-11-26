@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head th:replace="~{fragments/header :: header}">
+	<title>ShiroTestAthorizationPage</title>
 </head>
 <body>
 <script src="/webjars/jquery/jquery.min.js"></script>
@@ -24,6 +25,42 @@
         });
     }
 
+    function createMsgToMq1() {
+	    var msg =$("input[name='msg']").val();
+        $.ajax({
+            url :'/order/msg/create1',
+            type:"post",
+            data:{msg : msg },
+            dataType:"json",
+            success :function(data){
+                if(data.result=="exception"){
+                    alert("异常："+data.message+"["+data.errorCode+"]");
+                    return ;
+                }
+                alert(msg+ "创建成功");
+                $('#mqInfo1').html("成功创建:"+msg);
+            }
+        });
+    }
+
+    function createMsgToMq2() {
+        var msg =$("input[name='msg']").val();
+        $.ajax({
+            url :'/order/msg/create2',
+            type:"post",
+            data:{msg : msg },
+            dataType:"json",
+            success :function(data){
+                if(data.result=="exception"){
+                    alert("异常："+data.message+"["+data.errorCode+"]");
+                    return ;
+                }
+                alert(msg+ "创建成功");
+                $('#mqInfo2').html("成功创建:"+msg);
+            }
+        });
+    }
+
 </script>
 
 <!-- Page content -->
@@ -38,7 +75,22 @@
 		<input type="text" name="email" />
 		<input type="submit"/>
 	</form>
+
+
+    <input type="text" name="msg" value="订单1002125678945"/>
+    <button onclick="createMsgToMq1()"> RabbitMq生产消息-Topic</button>
+    <button onclick="updateMsgFromMq()"> 更新结果</button>
+    <p id="mqInfo1"></p>
+
+    <input type="text" name="msg" value="订单222125678945"/>
+    <button onclick="createMsgToMq2()"> RabbitMq生产消息-Fanout</button>
+    <button onclick="updateMsgFromMq()"> 更新结果</button>
+    <p id="mqInfo2"></p>
+
 </div><!-- /.container -->
+
+
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
