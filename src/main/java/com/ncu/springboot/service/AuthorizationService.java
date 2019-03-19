@@ -1,8 +1,7 @@
-package com.ncu.springboot.Service;
+package com.ncu.springboot.service;
 
 import com.ncu.springboot.pojo.Role;
 import com.ncu.springboot.pojo.User;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;

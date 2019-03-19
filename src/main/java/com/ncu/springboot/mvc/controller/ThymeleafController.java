@@ -1,11 +1,8 @@
 package com.ncu.springboot.mvc.controller;
 
-import com.ncu.springboot.Service.AuthorizationService;
+import com.ncu.springboot.service.AuthorizationService;
 import com.ncu.springboot.pojo.LearnResouce;
-import com.ncu.springboot.pojo.Role;
-import com.ncu.springboot.pojo.User;
 import com.ncu.springboot.websocket.PriceCreateThread;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

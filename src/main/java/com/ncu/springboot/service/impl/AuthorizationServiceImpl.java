@@ -1,6 +1,6 @@
-package com.ncu.springboot.Service.impl;
+package com.ncu.springboot.service.impl;
 
-import com.ncu.springboot.Service.AuthorizationService;
+import com.ncu.springboot.service.AuthorizationService;
 import com.ncu.springboot.dao.PermissionDao;
 import com.ncu.springboot.dao.RoleDao;
 import com.ncu.springboot.dao.UserDao;

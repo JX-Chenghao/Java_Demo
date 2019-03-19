@@ -1,4 +1,4 @@
-package com.ncu.springboot.Service;
+package com.ncu.springboot.service;
 
 import com.ncu.springboot.pojo.User;
 

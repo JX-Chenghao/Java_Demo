@@ -22,7 +22,7 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="DEBUG">
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>
@@ -30,7 +30,11 @@
     <!-- logback为java中的包 -->
     <logger name="com.ncu.springboot"/>
     <!--logback.LogbackDemo：类的全路径 -->
-    <logger name="com.ncu.springboot.BitCoinServer" level="INFO" additivity="false">
+    <logger name="com.ncu.springboot.BitCoinServer" level="DEBUG" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
+
+    <logger name="com.ncu.springboot.service.UserService" level="DEBUG" additivity="false">
         <appender-ref ref="console"/>
     </logger>
 

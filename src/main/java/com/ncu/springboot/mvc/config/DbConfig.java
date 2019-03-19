@@ -8,9 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
 @Configuration
-public class DbConfig {
+@EnableTransactionManagement(proxyTargetClass = true)
+/*配置类上来开启声明式事务的支持  经过测试，发现不开启此注解也能成功开启
+   经查询资料发现 Application启动类上 存在 @SpringBootApplication 注解
+   @SpringBootApplication 配置了 @EnableAutoConfiguration 注解
+   @EnableAutoConfiguration 注解开启，则 @EnableTransactionManagement 无需配置，声明式事务已支持
+   */
+public class DbConfig implements TransactionManagementConfigurer{
     private  static final Logger LOG= LoggerFactory.getLogger(DbConfig.class);
     @Autowired
     private Environment env;
@@ -32,5 +42,11 @@ public class DbConfig {
         dataSource.setPoolPreparedStatements(false);//是否缓存preparedStatement，也就是PSCache
         LOG.info("MYSQL数据源建立: {} ",env.getProperty("spring.datasource.username"));
         return dataSource;
+    }
+
+    @Bean
+    @Override
+    public PlatformTransactionManager annotationDrivenTransactionManager() {
+        return new DataSourceTransactionManager(dataSource());
     }
 }

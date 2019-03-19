@@ -1,6 +1,6 @@
 package com.ncu.springboot.mvc.security;
 
-import com.ncu.springboot.Service.AuthorizationService;
+import com.ncu.springboot.service.AuthorizationService;
 import com.ncu.springboot.mvc.helper.ExceptionStrPropertiesHelper;
 import com.ncu.springboot.pojo.User;
 import org.apache.shiro.authc.AuthenticationException;
