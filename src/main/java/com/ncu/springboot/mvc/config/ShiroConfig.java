@@ -231,6 +231,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/*.ico", "anon");
         filterChainDefinitionMap.put("/captcha.jpg", "anon");
+        filterChainDefinitionMap.put("/cxf-services/**", "anon");
         //此url 依旧需要用户认证，只持有remberMe Cookie 无权访问
         filterChainDefinitionMap.put("/importantPage", "authc");//一旦这样(可以在重要页面，rememberMe不起作用，继续要求认证) 那么rememberMe 就算为true ,之后你再进来此页面依旧需要登录
         filterChainDefinitionMap.put("/logout", "logout");

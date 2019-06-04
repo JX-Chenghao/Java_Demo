@@ -6,9 +6,6 @@ import java.util.Set;
 
 /**
  * User 实体.
- * 
- * @since 1.0.0 2017年4月29日
- * @author <a href="https://waylau.com">Way Lau</a> 
  */
 
 @Data
