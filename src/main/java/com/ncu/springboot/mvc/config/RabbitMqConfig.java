@@ -4,8 +4,16 @@ import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMqConfig {
+    // 死信的交换机名
+    private final String DEAD_LETTER_EXCHANGE = "spt.topic.dead_exchange";
+    private final String DEAD_ROUTING_QUEUE = "direct_dead_queue";
+    private final String DEAD_ROUTING_KEY = "direct_dead_routing_key";
+
     @Bean
     public Queue queueOne(){
         return new Queue("spt_queue_test1");
@@ -13,7 +21,13 @@ public class RabbitMqConfig {
 
     @Bean
     public Queue queueTwo(){
-        return new Queue("spt_queue_test2");
+        Map<String,Object> args=new HashMap<>();
+        // 设置此Queue的死信的信箱
+        args.put("x-dead-letter-exchange", DEAD_LETTER_EXCHANGE);
+        // 设置死信routingKey
+        args.put("x-dead-letter-routing-key",DEAD_ROUTING_KEY);
+
+        return new Queue("spt_queue_test2",true,false,false, args);
     }
 
     @Bean
@@ -79,4 +93,21 @@ public class RabbitMqConfig {
         //广播
         return BindingBuilder.bind(queueThree()).to(fanoutExchange());
     }
+
+    @Bean
+    public Queue deadLetterQueue(){
+        return new Queue(DEAD_ROUTING_QUEUE);
+    }
+
+    @Bean
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange(DEAD_LETTER_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Binding deadLetterBinding(){
+        return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange()).with(DEAD_ROUTING_KEY);
+    }
+
+
 }
