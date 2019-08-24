@@ -22,8 +22,13 @@ import org.springframework.transaction.annotation.TransactionManagementConfigure
    */
 public class DbConfig implements TransactionManagementConfigurer{
     private  static final Logger LOG= LoggerFactory.getLogger(DbConfig.class);
+    private final Environment env;
+
     @Autowired
-    private Environment env;
+    public  DbConfig(Environment env) {
+        this.env = env;
+    }
+
 
     @Bean(name="dataSource")
     public DruidDataSource dataSource() {

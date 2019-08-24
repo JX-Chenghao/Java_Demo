@@ -50,11 +50,11 @@ public class RedisSessionDAO extends AbstractSessionDAO {
 			logger.error("session or session id is null");
 			return;
 		}
-		logger.info("save session id in redis {}",session.getId());
+		logger.debug("save session id in redis {}",session.getId());
 		byte[] key = getByteKey(session.getId());
 		byte[] value = SerializeUtils.serialize(session);
 		if ((long)(redisManager.getExpire() * 1000) < session.getTimeout()) {
-			logger.warn("Redis session expire time: " + redisManager.getExpire() * 1000 + " is less than Session timeout: " + session.getTimeout() + " . It may cause some problems.");
+			logger.warn("Redis session expire time: {} is less than Session timeout: {}  . It may cause some problems." , redisManager.getExpire() * 1000 , session.getTimeout());
 		}
 		this.redisManager.set(key, value, redisManager.getExpire());
 	}
@@ -99,7 +99,7 @@ public class RedisSessionDAO extends AbstractSessionDAO {
 			logger.error("session id is null");
 			return null;
 		}
-		logger.info("read session id in redis {}",sessionId);
+		logger.debug("read session id in redis {}",sessionId);
 		return  (Session)SerializeUtils.deserialize(redisManager.get(this.getByteKey(sessionId)));
 	}
 	
