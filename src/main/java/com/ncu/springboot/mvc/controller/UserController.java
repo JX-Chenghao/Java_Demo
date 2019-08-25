@@ -2,6 +2,8 @@ package com.ncu.springboot.mvc.controller;
 
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
+import com.ncu.springboot.aop.ApiInvokeTimeShow;
+import com.ncu.springboot.pojo.ResponseVo;
 import com.ncu.springboot.service.UserService;
 import com.ncu.springboot.mvc.exception.OwnException;
 import com.ncu.springboot.pojo.User;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -37,10 +40,12 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public Map<String,String> login(HttpServletRequest request, String username, String password,Boolean rememberMe){
+    @ResponseBody
+    public ResponseVo login(HttpServletRequest request, String username, String password, Boolean rememberMe){
         LOG.info("账户登录");
         LOG.info("token.rememberMe-{}",rememberMe);
-        Map<String,String> map=new HashMap<>();
+        ResponseVo response=new ResponseVo();
+
         Subject subject = SecurityUtils.getSubject();
 
         if(subject.isAuthenticated() && !subject.getPrincipal().equals(username)){
@@ -58,9 +63,9 @@ public class UserController {
             String[] split = strError.split("\\.");
             throw new OwnException("["+split[split.length-1]+"]账户 "+username+" 不存在");
         }else{
-            map.put("result","true");
-            LOG.info("账户登录成功,当前Shiro.Subject用户 {}: ",subject.getPrincipal());
-            return map;
+            response.setResult("true");
+            LOG.info("账户登录成功,当前Shiro.Subject用户: {}",subject.getPrincipal());
+            return response;
         }
            /*
             既然走了表单过滤器验证 那么subject.login(token)此代码
@@ -71,6 +76,7 @@ public class UserController {
     }
 
     @RequestMapping("/captcha.jpg")
+    @ApiInvokeTimeShow
     public String captcha(HttpServletRequest request, HttpServletResponse response) throws Exception{
         //客户端不存缓存，立马过期
         // Set to expire far in the past.
@@ -103,6 +109,7 @@ public class UserController {
 
     @RequiresPermissions("user:find")
     @PostMapping("/user/find")
+    @ApiInvokeTimeShow(methodName = "查询账户")
     public User find(String name) {
         LOG.info("查询账户");
         return userService.findUserByName(name);
@@ -110,9 +117,9 @@ public class UserController {
 
     @RequiresPermissions("user:save")
     @PostMapping("/user/save")
+    @ApiInvokeTimeShow(methodName = "注册账户")
     public Map<String,String> find(User user) {
         Map<String,String> map=new HashMap<>();
-        LOG.info("注册账户");
         userService.saveUser(user);
         map.put("result","true");
         return map;

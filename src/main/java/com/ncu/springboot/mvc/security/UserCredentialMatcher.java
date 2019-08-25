@@ -51,7 +51,7 @@ public class UserCredentialMatcher extends HashedCredentialsMatcher {
         if (matcheRes) {
             // clear retry count
             passwordRetryCache.remove(username);
-            //认证虽然成功但 此时 subject 中shiro 用户任为null
+            //认证虽然成功但 此时 subject 中shiro 用户仍为null
             LOG.info("认证成功,当前用户:{}", SecurityUtils.getSubject().getPrincipal());
         }
         LOG.info("CredentialMatcher 认证 {}",matcheRes ? "successful" : "failed");
