@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 @Component
 @Aspect
@@ -26,14 +27,12 @@ public class ApiInvokeTimeAspect {
         } else {
             methodName = apiInvokeTimeShow.methodName();
         }
-        long begin = System.currentTimeMillis();
-
+        StopWatch stopWatch = new StopWatch(methodName);
+        stopWatch.start(methodName);
         Object result = joinPoint.proceed();
+        stopWatch.stop();
 
-        long end = System.currentTimeMillis();
-
-        LOG.info("{}：耗时 {}ms" , methodName,(end - begin));
-
+        LOG.info(stopWatch.shortSummary());
         return result;
     }
 

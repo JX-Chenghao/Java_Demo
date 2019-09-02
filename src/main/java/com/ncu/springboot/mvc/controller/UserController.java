@@ -111,7 +111,6 @@ public class UserController {
     @PostMapping("/user/find")
     @ApiInvokeTimeShow(methodName = "查询账户")
     public User find(String name) {
-        LOG.info("查询账户");
         return userService.findUserByName(name);
     }
 
