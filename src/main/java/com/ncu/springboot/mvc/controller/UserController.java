@@ -3,10 +3,11 @@ package com.ncu.springboot.mvc.controller;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 import com.ncu.springboot.aop.ApiInvokeTimeShow;
-import com.ncu.springboot.pojo.ResponseVo;
-import com.ncu.springboot.service.UserService;
 import com.ncu.springboot.mvc.exception.OwnException;
+import com.ncu.springboot.pojo.ResponseVo;
 import com.ncu.springboot.pojo.User;
+import com.ncu.springboot.redisson.DistributedLocker;
+import com.ncu.springboot.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
@@ -16,6 +17,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,15 +30,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
+@Service
 public class UserController {
     private  final Logger LOG= LoggerFactory.getLogger(this.getClass());
     public static final String SHIRO_LOGIN_FAILURE = "shiroLoginFailure";
     @Autowired
-    private UserService userService;
+    public UserService userService;
     @Autowired
     private Producer kaptcha;
+    @Autowired
+    private DistributedLocker redissonDistributedLocker;
 
 
     @PostMapping("/login")
@@ -114,13 +120,32 @@ public class UserController {
         return userService.findUserByName(name);
     }
 
-    @RequiresPermissions("user:save")
+    //@RequiresPermissions("user:save")
     @PostMapping("/user/save")
     @ApiInvokeTimeShow(methodName = "注册账户")
-    public Map<String,String> find(User user) {
+    public Map<String,String> save(User user) {
         Map<String,String> map=new HashMap<>();
-        userService.saveUser(user);
-        map.put("result","true");
+        boolean isLocked = false;
+
+        //redis 存的是Hash 类型的锁 key为conn的 nodeId+threadId,value为1 ，可重入锁，此值会增加
+        //并发时 hash 的size不会增加，会返回给客户端 上一个获取锁的过期时间
+        String lockKey = "user:save";
+        isLocked = redissonDistributedLocker.tryLock(lockKey, TimeUnit.MILLISECONDS, 1000, 15000);
+        if (isLocked && !Thread.currentThread().isInterrupted()) {
+            LOG.info("Thread ID-{} 获取到锁", Thread.currentThread().getId());
+            userService.saveUser(user);
+            map.put("result", "true");
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                redissonDistributedLocker.unlock(lockKey);
+            }
+        } else {
+            LOG.info("Thread ID-{} 未获取到锁", Thread.currentThread().getId() );
+            throw new OwnException("请重试,刚刚有用户正在注册账户(获取锁失败)");
+        }
         return map;
     }
 
