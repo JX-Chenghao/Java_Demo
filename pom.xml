@@ -196,6 +196,21 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>org.crazycake</groupId>
+            <artifactId>shiro-redis</artifactId>
+            <version>3.2.3</version>
+        </dependency>
+        <!--
+                <dependency>
+                    <groupId>org.springframework.kafka</groupId>
+                    <artifactId>spring-kafka</artifactId>
+                    <version>1.1.1.RELEASE</version>
+                </dependency>
+
+        -->
+
+
     </dependencies>
 
     <build>

@@ -7,9 +7,8 @@ import com.ncu.springboot.mvc.security.CaptchaValidateFilter;
 import com.ncu.springboot.mvc.security.UserCredentialMatcher;
 import com.ncu.springboot.mvc.security.UserDbRealm;
 import com.ncu.springboot.mvc.security.UserFormAuthenticationFilter;
-import com.ncu.springboot.mvc.security.redis.RedisCacheManager;
-import com.ncu.springboot.mvc.security.redis.RedisManager;
-import com.ncu.springboot.mvc.security.redis.RedisSessionDAO;
+
+
 import com.ncu.springboot.mvc.security.redis.ShiroDefaultWebSessionManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -30,6 +29,9 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.Cookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisClusterManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +52,8 @@ public class ShiroConfig {
     @Value("${spring.redis.host}")
     private String redisHost;
 
-    @Value("${spring.redis.port}")
-    private int redisPort;
+    /*@Value("${spring.redis.port}")
+    private int redisPort;*/
 
     @Value("${spring.redis.password}")
     private String redisPassWord;
@@ -59,7 +61,6 @@ public class ShiroConfig {
     @Value("${server.servlet.session.cookie.name}")
     private String sessionIdCookieName;
 
-    private String rememberMeCookieName = "springBoot-rememberMe";
     /*身份验证*/
     @Bean
     public UserDbRealm realm(){
@@ -91,6 +92,7 @@ public class ShiroConfig {
 
     @Bean
     public Cookie rememberMeCookie(){
+        String rememberMeCookieName = "springBoot-rememberMe";
         SimpleCookie simpleCookie = new SimpleCookie(rememberMeCookieName);
         simpleCookie.setHttpOnly(true);
         simpleCookie.setMaxAge(3600*24*15);//15天
@@ -119,16 +121,14 @@ public class ShiroConfig {
      * 其实使用的是 shiro-redis 开源插件
      */
     @Bean
-    public RedisManager redisManager(){
-        RedisManager redisManager = new RedisManager();
-        redisManager.setHost(redisHost);
+    public RedisClusterManager redisManager(){
+        RedisClusterManager redisClusterManager = new RedisClusterManager();
+        redisClusterManager.setHost(redisHost);
         if (StringUtils.isNotEmpty(redisPassWord)) {
-            redisManager.setPassword(redisPassWord);
+            redisClusterManager.setPassword(redisPassWord);
         }
-        redisManager.setPort(redisPort);
-        redisManager.setExpire(1800);//键值对 过期
-        redisManager.setTimeout(10000);
-        return  redisManager;
+        redisClusterManager.setTimeout(10000);
+        return  redisClusterManager;
     }
 
     @Bean
@@ -149,7 +149,7 @@ public class ShiroConfig {
         DefaultWebSessionManager sessionManager = new ShiroDefaultWebSessionManager();
         sessionManager.setSessionIdCookieEnabled(true);
         sessionManager.setSessionIdCookie(cookie());
-        sessionManager.setGlobalSessionTimeout(180000);
+        sessionManager.setGlobalSessionTimeout(1800000L);
         sessionManager.setSessionDAO(redisSessionDAO());
         return  sessionManager;
     }
