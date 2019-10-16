@@ -1,11 +1,10 @@
 package com.ncu.springboot;
 
+import com.ncu.springboot.cxf.CxfInvokeTest;
 import com.ncu.springboot.mvc.controller.UserController;
-import com.ncu.springboot.test.distribution.DistributionLockTest;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -22,8 +21,10 @@ public class Application {
 		RedissonClient redissonClient= (RedissonClient)context.getBean("redissonClient");
         LOG.info("RedissonClient Bean :{}",redissonClient.toString());
 
-		UserController userController= (UserController)context.getBean("userController");
+		//UserController userController= (UserController)context.getBean("userController");
         //new DistributionLockTest(userController).test1();
 		//new DistributionLockTest(userController).test2();
+
+		new CxfInvokeTest().testCxfInvoke();
     }
 }

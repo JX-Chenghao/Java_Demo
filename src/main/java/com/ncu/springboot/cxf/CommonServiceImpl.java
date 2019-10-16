@@ -1,6 +1,8 @@
 package com.ncu.springboot.cxf;
 
+import com.ncu.springboot.aop.ApiInvokeTimeShow;
 import com.ncu.springboot.pojo.Role;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.jws.WebService;
@@ -10,15 +12,20 @@ import javax.jws.WebService;
         endpointInterface = "com.ncu.springboot.cxf.ICommonService"// 接口地址
 )
 @Component
+@Slf4j
 public class CommonServiceImpl implements ICommonService {
 
     @Override
+    @ApiInvokeTimeShow
     public String sayHello(String name) {
+        log.info("【cxf服务端】 WebService调用 sayHello ,params:{}",name);
         return "Hello ," + name;
     }
 
     @Override
+    @ApiInvokeTimeShow
     public Role getRole(String name) {
+        log.info("【cxf服务端】 WebService调用 getRole ,params:{}",name);
         Role role = new Role();
         role.setRoleType("ADMIN");
         return role;
