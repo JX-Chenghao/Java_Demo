@@ -5,11 +5,11 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-public class Role  {
+public class Role extends BaseBo {
     private static final long serialVersionUID = 4788839955936593560L;
     //@Id // 主键
     //@GeneratedValue(strategy= GenerationType.IDENTITY) // 自增策略
-    private Long id; // 实体一个唯一标识
+    //private Long id; // 实体一个唯一标识
     private String name;
     private String roleType;
     private String remark;

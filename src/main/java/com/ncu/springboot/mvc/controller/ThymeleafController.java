@@ -1,46 +1,42 @@
 package com.ncu.springboot.mvc.controller;
 
+import com.ncu.springboot.pojo.User;
 import com.ncu.springboot.service.AuthorizationService;
-import com.ncu.springboot.pojo.LearnResouce;
+import com.ncu.springboot.service.UserService;
 import com.ncu.springboot.websocket.PriceCreateThread;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 
 @Controller
 @RequestMapping("/thymeleaf")
+@Slf4j
 public class ThymeleafController {
-    private  static final Logger LOG= LoggerFactory.getLogger(ThymeleafController.class);
-    private static  boolean START_FLAG=false;
+    private static boolean START_FLAG = false;
     @Autowired
     private AuthorizationService authorizationService;
+    @Autowired
+    private UserService userService;
 
     @RequestMapping("/websocket")
-    public ModelAndView index(){
-        LOG.info("价格实时展示");
-        if(!START_FLAG){
+    public ModelAndView index() {
+        log.info("价格实时展示");
+        if (!START_FLAG) {
             new Thread(new PriceCreateThread()).start();
-            START_FLAG=true;
-            LOG.info("开启新线程实时推送价格");
+            START_FLAG = true;
+            log.info("开启新线程实时推送价格");
         }
-        List<LearnResouce> learnList =new ArrayList<LearnResouce>();
-        LearnResouce bean =new LearnResouce("参考文档","Spring Boot Reference Guide","http://docs.spring.io/spring-boot/docs/1.5.1.RELEASE/reference/htmlsingle/#getting-started-first-application");
-        learnList.add(bean);
-        bean =new LearnResouce("CCCCC","百度","https://www.baidu.com/");
-        learnList.add(bean);
-        bean =new LearnResouce("程序猿","谷歌","https://www.google.com/");
-        learnList.add(bean);
-        bean =new LearnResouce("HHHHH","IE","http://www.baidu.com");
-        learnList.add(bean);
+        User currentUser = userService.findUserByName(SecurityUtils.getSubject().getPrincipal().toString());
 
         ModelAndView modelAndView = new ModelAndView("/indexThymeleaf");
-        modelAndView.addObject("learnList", learnList);
+        modelAndView.addObject("currentUser", currentUser);
         return modelAndView;
     }
 }

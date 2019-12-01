@@ -12,7 +12,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
+/**
+ * 不再使用此类,只做学习Shiro-redis源码用途
+ *
+ */
 public class RedisSessionDAO extends AbstractSessionDAO {
 
 	private static Logger logger = LoggerFactory.getLogger(RedisSessionDAO.class);

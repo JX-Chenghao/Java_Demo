@@ -14,5 +14,8 @@ public interface ICommonService {
     public String sayHello(@WebParam(name = "userName") String name);
 
     @WebMethod
+    public String getAopException(@WebParam(name = "userName") String name);
+
+    @WebMethod
     public Role getRole(@WebParam(name = "userName") String name);
 }

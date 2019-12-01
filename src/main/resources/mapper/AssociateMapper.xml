@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ncu.springboot.associatetable.AssociateDao">
+
+	<insert id="insert" parameterType="map">
+		insert into ${table}
+		(${insertField}) values(#{assocCol},#{inverseCol})
+	</insert>
+
+	<delete id="deleteByAssoc" parameterType="map">
+		delete from ${table}
+		where ${clause}
+	</delete>
+
+	<delete id="deleteByAssocIdList" parameterType="map">
+		delete from ${table} where ${assocCol} in
+		<foreach item="item" index="index" collection="idList" open="("
+				 separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="listStringValueByAssoc" parameterType="map" resultType="java.lang.String">
+		select ${cols} from ${table} where ${clause}
+	</select>
+
+	<select id="listLongValueByAssoc" parameterType="map" resultType="java.lang.Long">
+		select ${cols} from ${table} where ${clause}
+	</select>
+</mapper>

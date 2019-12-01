@@ -15,4 +15,13 @@ public class CxfInvokeTest {
         ICommonService commonService = (ICommonService) factory.create();
         log.info("【cxf客户端】 接收 returns{}",commonService.sayHello("cxf client"));
     }
+
+
+    public void testAopException() {
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(ICommonService.class);
+        factory.setAddress("http://localhost:9090/cxf-services/CommonService?wsdl");
+        ICommonService commonService = (ICommonService) factory.create();
+        log.info("【cxf客户端】 接收 returns{}",commonService.getAopException("cxf client"));
+    }
 }

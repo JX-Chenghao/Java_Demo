@@ -10,10 +10,9 @@ import java.util.Set;
 
 @Data
 //@Entity
-public class User {
+public class User extends BaseBo{
 	//@Id // 主键
 	//@GeneratedValue(strategy=GenerationType.IDENTITY) // 自增策略
-	private Long id; // 实体一个唯一标识
 	private String name;
 	private String email;
 	private String pwd;
@@ -26,7 +25,7 @@ public class User {
 	}
 	
 	public User(Long id, String name, String email) {
-		this.id = id;
+		this.setId(id);
 		this.name = name;
 		this.email = email;
 	}

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.TransactionManagementConfigure
    经查询资料发现 Application启动类上 存在 @SpringBootApplication 注解
    @SpringBootApplication 配置了 @EnableAutoConfiguration 注解
    @EnableAutoConfiguration 注解开启，则 @EnableTransactionManagement 无需配置，声明式事务已支持
+   Aop 顺序 Order若需配置在这 默认2147483647
    */
 public class DbConfig implements TransactionManagementConfigurer{
     private  static final Logger LOG= LoggerFactory.getLogger(DbConfig.class);

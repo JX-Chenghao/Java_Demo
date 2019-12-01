@@ -1,8 +1,10 @@
 package com.ncu.springboot.cxf;
 
 import com.ncu.springboot.aop.ApiInvokeTimeShow;
+import com.ncu.springboot.mvc.exception.OwnException;
 import com.ncu.springboot.pojo.Role;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.jws.WebService;
@@ -19,7 +21,16 @@ public class CommonServiceImpl implements ICommonService {
     @ApiInvokeTimeShow
     public String sayHello(String name) {
         log.info("【cxf服务端】 WebService调用 sayHello ,params:{}",name);
+        //throw new OwnException("Aop异常抛出");
         return "Hello ," + name;
+    }
+
+    @Override
+    @ApiInvokeTimeShow
+    public String getAopException(String name) {
+        log.info("【cxf服务端】 WebService调用 sayHello ,params:{}",name);
+        throw new OwnException("Aop异常抛出");
+        //return "Hello ," + name;
     }
 
     @Override

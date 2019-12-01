@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 不再使用此类,只做学习Shiro-redis源码用途
+ *
+ */
 public class RedisCacheManager implements CacheManager {
 
 	private static final Logger logger = LoggerFactory

@@ -37,7 +37,7 @@ public class UserDbRealm extends AuthorizingRealm{
             throw new AuthorizationException(ExceptionStrPropertiesHelper.getInstance()
                     .getPropertiesValue("user_login_info_had_expired"));
         }
-
+        //配置中已开启缓存
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         authorizationInfo.setRoles(authorizationService.findRoles(username));
         authorizationInfo.setStringPermissions(authorizationService.findPermissions(username));

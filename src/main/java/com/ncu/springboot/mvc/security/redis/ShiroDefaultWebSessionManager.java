@@ -8,7 +8,10 @@ import org.apache.shiro.web.session.mgt.WebSessionKey;
 
 import javax.servlet.ServletRequest;
 import java.io.Serializable;
-
+/**
+ * 不再使用此类,只做学习Shiro-redis源码用途
+ *
+ */
 public class ShiroDefaultWebSessionManager extends DefaultWebSessionManager {
     /**
      * 获取session

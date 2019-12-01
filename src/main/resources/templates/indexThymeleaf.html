@@ -43,7 +43,7 @@
         //将消息显示在网页上
         function setMessageInnerHTML(innerHTML) {
             var bitcoin = eval("(" + innerHTML + ")");
-            document.getElementById('price').innerHTML = bitcoin.price;
+            document.getElementById('time').innerHTML = bitcoin.time;
             document.getElementById('total').innerHTML = bitcoin.total;
         }
 
@@ -59,23 +59,39 @@
 
 <div style="text-align: center;margin:0 auto;width: 1000px; ">
     <div style="width:400px;margin:20px auto;border:1px solid lightgray;padding:20px;text-align:center;">
-        当前价格：￥<span style="color:#FF7519" id="price">10000</span>
-        <div style="font-size:0.9em;margin-top:20px">查看的人数越多，价格越高, 当前总共 <span id="total">1</span> 个人在线<a href="/findPage" >findPage</a></div>
+        当前时间：￥<span style="color:#FF7519" id="time">0</span>
+
     </div>
 
     <table width="100%" border="1" cellspacing="1" cellpadding="0">
         <tr>
-            <td>作者</td>
-            <td>教程名称</td>
-            <td>地址</td>
+            <td>USER</td>
+            <td>PWD</td>
+            <td>EMAIL</td>
+        </tr>
+        <tr>
+            <td th:text="${currentUser.name}"></td>
+            <td th:text="${currentUser.pwd}"></td>
+            <td th:text="${currentUser.email}"></td>
         </tr>
         <!--/*@thymesVar id="learnList" type=""*/-->
-        <tr th:each="learn : ${learnList}">
-            <td th:text="${learn.author}">嘟嘟MD</td>
-            <td th:text="${learn.title}">SPringBoot干货系列</td>
-            <td><a th:href="${learn.url}" target="_blank">点我</a></td>
+        <tr th:each="role : ${currentUser.roles}">
+            <td th:text="${role.name}"></td>
+            <td th:text="${role.roleType}"></td>
+            <td th:text="${role.remark}" ></td>
+            <td><a href="/findPage" target="_blank">查询</a></td>
         </tr>
+        <th:block th:each="role : ${currentUser.roles}">
+            <div style="height:150px;width: 800px;border:black 1px solid;margin:2em auto 0;">
+                <ul style="border:black 1px solid;">
+                    <th:block th:each="permission:${role.permissions}">
+                            <li th:text="${permission.name}" style=";margin-left: 50px;color:aqua;list-style:none;float:left;font-size:20px;border:black 1px solid"></li>
+                    </th:block>
+                </ul>
+            </div>
+        </th:block>
     </table>
+
 
     <form class="form-actions" action="/logout">
         <input type="submit" id="doLogout" tabindex="4" class="btn btn-primary" value="Logout"/>

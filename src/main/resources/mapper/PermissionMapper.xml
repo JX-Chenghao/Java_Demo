@@ -12,4 +12,10 @@
 		left join role_permission rp on p.id = rp.permission_id
 		where rp.role_id = #{roleId}
 	</select>
+
+
+	<select id="selectById" resultType="Permission">
+		select p.* from permission p
+		where p.id = #{id}
+	</select>
 </mapper>

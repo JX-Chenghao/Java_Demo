@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * 不再使用此类,只做学习Shiro-redis源码用途
+ * @param <K>
+ * @param <V>
+ */
 public class RedisCache<K, V> implements Cache<K, V> {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

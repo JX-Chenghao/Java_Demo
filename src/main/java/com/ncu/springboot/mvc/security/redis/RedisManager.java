@@ -9,6 +9,10 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Set;
 
+/**
+ * 不再使用此类,只做学习Shiro-redis源码用途
+ *
+ */
 public class RedisManager {
     private  static final Logger LOG= LoggerFactory.getLogger(RedisManager.class);
 	private String host = "127.0.0.1";

@@ -23,3 +23,9 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### user set ###
+.log
+.gz
+.cmd
+.md

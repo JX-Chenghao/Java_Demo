@@ -1,5 +1,6 @@
 package com.ncu.springboot.aop;
 
+import com.ncu.springboot.mvc.exception.OwnException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -26,6 +27,7 @@ public class TestAopOrderAspectC {
             result = joinPoint.proceed();
         }catch (Exception e) {
             LOG.info("error");
+            throw e;
         }
         LOG.info("{}：(order=3)","aroundAdvice2");
         return result;

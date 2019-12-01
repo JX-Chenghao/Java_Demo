@@ -8,4 +8,6 @@ import java.util.Set;
 @Mapper
 public interface PermissionDao {
 	Set<Permission> selectPermissionByRole(Long roleId);
+
+	Permission selectById(Long id);
 }
