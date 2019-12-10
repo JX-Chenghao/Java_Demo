@@ -6,9 +6,10 @@
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script type="text/javascript">
         var websocket = null;
+        var domain = document.domain;
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
-            websocket = new WebSocket("ws://localhost:9090/ws/bitcoinServer");
+            websocket = new WebSocket("ws://"+domain+":9090/ws/bitcoinServer");
 
             //连接成功建立的回调方法
             websocket.onopen = function () {
