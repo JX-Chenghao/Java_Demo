@@ -24,29 +24,18 @@ public class FunctionUtils {
         map.put("room", 1);
 
         try {
-
             String intA1 = (String) map.get("room");
-
         } catch (Exception e) {
 
             System.out.println("(String) error");
 
         }
 
-// Integer a = 1;
-
-// String a1 = (String) a; // ??????
-
-// ?????
-
         HashMap<String, Object> map1 = new HashMap<>();
 
         map1.put("room", 1);
-
         try {
-
             String intA1 = String.valueOf(map.get("room"));
-
         } catch (Exception e) {
 
             System.out.println("String.valueOf error");
@@ -66,9 +55,7 @@ public class FunctionUtils {
         Integer i = null;
 
         if (i instanceof Integer) {
-
             System.out.println("i-Integer");
-
         }
 
         if (print.contains(null)) {
@@ -135,7 +122,7 @@ public class FunctionUtils {
 
         try {
 
-            long l = Long.parseLong("022260644564656235552");
+            long l = Long.parseLong("0222606445646562352");
 
             System.out.println("Long.parseLong: " + l);
 
@@ -163,7 +150,7 @@ public class FunctionUtils {
 
         editList(a);
 
-        System.out.println("list ?????????:" + a.toString()); // ???????????????????
+        System.out.println("list ?????????:" + a.toString());
 
         Set<Long> longSet = new HashSet<>();
 
@@ -171,7 +158,7 @@ public class FunctionUtils {
 
         longSet.add(2L);
 
-//longSet.add(null);
+        //longSet.add(null);
 
         if (longSet.contains(null)) {
 
