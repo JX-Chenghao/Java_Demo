@@ -1,4 +1,4 @@
-package com.ncu.springboot.util;
+package com.ncu.springboot.algorithm;
 
 import java.util.Arrays;
 import java.util.Comparator;

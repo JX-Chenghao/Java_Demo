@@ -1,4 +1,4 @@
-package com.ncu.springboot.util;
+package com.ncu.springboot.algorithm.sort;
 
 import com.ncu.springboot.pojo.BaseBo;
 import org.apache.commons.collections.CollectionUtils;

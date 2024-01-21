@@ -1,4 +1,4 @@
-package com.ncu.springboot.util;
+package com.ncu.springboot.algorithm;
 
 /*
 * TOP-K问题。
