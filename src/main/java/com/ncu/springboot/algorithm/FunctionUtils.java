@@ -1,6 +1,8 @@
 package com.ncu.springboot.algorithm;
 
 import com.ncu.springboot.algorithm.cache.OwnerCache;
+import com.ncu.springboot.service.impl.UserServiceImpl;
+import org.openjdk.jol.info.ClassLayout;
 
 import java.util.*;
 
@@ -150,7 +152,13 @@ public class FunctionUtils {
 
         editList(a);
 
+
+
         System.out.println("list ?????????:" + a.toString());
+
+        System.out.println(ClassLayout.parseInstance(a).toPrintable());
+        System.out.println(ClassLayout.parseInstance(new UserServiceImpl()).toPrintable());
+
 
         Set<Long> longSet = new HashSet<>();
 
