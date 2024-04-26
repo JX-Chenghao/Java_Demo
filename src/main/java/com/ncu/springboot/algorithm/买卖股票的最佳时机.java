@@ -28,6 +28,8 @@ import javax.validation.constraints.Max;
  * 解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
  */
 public class 买卖股票的最佳时机 {
+
+
     /**
      * f（n）代表当天卖出得到的最大利润
      * f（n） = max {f（n-1）, price[n]-MIN(price[n-1])}

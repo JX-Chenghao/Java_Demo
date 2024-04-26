@@ -1,5 +1,11 @@
 package com.ncu.springboot.algorithm;
 
+import jodd.util.CollectionUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
 /**
  * 给你链表的头节点 head ，每 k 个节点一组进行翻转，请你返回修改后的链表。
  *
@@ -12,7 +18,6 @@ package com.ncu.springboot.algorithm;
  */
 public class K个一组翻转链表 {
     public ListNode reverseKGroup(ListNode head, int k) {
-
 
 
         return head;
