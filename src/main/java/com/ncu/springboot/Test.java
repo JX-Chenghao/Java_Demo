@@ -1,4 +1,4 @@
-package com.ncu.zuulserver;
+package com.ncu.springboot;
 
 import org.springframework.util.StringUtils;
 
